@@ -12,12 +12,8 @@ It answers only from these documents and cites them, and refuses questions outsi
 knowledge base (or requests for advice) instead of guessing. The docs are swappable, so the
 same pipeline works for any domain.
 
-> **Educational use only — not financial advice.**
->
-> _Live demo: [add your deployed URL] · Demo video: [add your Loom link]_
-
-![Investing RAG Assistant — chat UI answering a question with cited sources](docs/screenshot.png)
-
+Video of the RAG Investing Asistant
+https://www.loom.com/share/26e86e21065449369159bd949ac083e8
 ---
 
 ## Why this project
