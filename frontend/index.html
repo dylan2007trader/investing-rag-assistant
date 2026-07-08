@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>RAG Assistant</title>
+<style>
+  :root { --navy:#1f3a5f; --bg:#f4f6f9; --card:#fff; --border:#e2e6ec; --muted:#6b7280; }
+  * { box-sizing: border-box; }
+  body { margin:0; font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+         background:var(--bg); color:#1a1f29; }
+  header { background:var(--navy); color:#fff; padding:18px 24px; }
+  header h1 { margin:0; font-size:18px; }
+  header p { margin:4px 0 0; font-size:13px; opacity:.8; }
+  main { max-width:760px; margin:0 auto; padding:20px; }
+  #chat { display:flex; flex-direction:column; gap:14px; min-height:300px; }
+  .msg { padding:12px 14px; border-radius:12px; max-width:88%; white-space:pre-wrap;
+         line-height:1.45; font-size:14px; }
+  .user { align-self:flex-end; background:var(--navy); color:#fff; border-bottom-right-radius:3px; }
+  .bot  { align-self:flex-start; background:var(--card); border:1px solid var(--border);
+          border-bottom-left-radius:3px; }
+  .sources { margin-top:10px; font-size:12px; color:var(--muted); }
+  .sources details { margin-top:6px; }
+  .sources summary { cursor:pointer; color:var(--navy); font-weight:600; }
+  .chip { display:inline-block; background:#eef2f7; border:1px solid var(--border);
+          border-radius:20px; padding:2px 10px; margin:3px 4px 0 0; font-size:11px; }
+  .snippet { margin:6px 0 0; padding:8px 10px; background:#fafbfc; border-left:3px solid var(--navy);
+             border-radius:4px; color:#333; }
+  form { display:flex; gap:8px; margin-top:18px; }
+  input { flex:1; padding:12px 14px; border:1px solid var(--border); border-radius:10px; font-size:14px; }
+  button { padding:12px 18px; border:none; border-radius:10px; background:var(--navy);
+           color:#fff; font-size:14px; cursor:pointer; }
+  button:disabled { opacity:.5; cursor:default; }
+  .meta { font-size:11px; color:var(--muted); margin-top:4px; }
+  .examples { margin:0 0 16px; font-size:13px; color:var(--muted); }
+  .examples a { color:var(--navy); cursor:pointer; text-decoration:underline; margin-right:10px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Investing Q&amp;A — RAG Assistant</h1>
+  <p>Ask an investing question. Answers are retrieved from the knowledge base and cited to their source. Educational only, not financial advice.</p>
+</header>
+<main>
+  <p class="examples">Try:
+    <a onclick="ask(this.textContent)">What is the P/E ratio?</a>
+    <a onclick="ask(this.textContent)">How are capital gains taxed?</a>
+    <a onclick="ask(this.textContent)">What are some large-cap tech stocks?</a>
+    <a onclick="ask(this.textContent)">Where can I research stocks?</a>
+  </p>
+  <div id="chat"></div>
+  <form id="form">
+    <input id="q" placeholder="Ask a question..." autocomplete="off" />
+    <button id="send" type="submit">Send</button>
+  </form>
+</main>
+<script>
+const chat = document.getElementById("chat");
+const form = document.getElementById("form");
+const input = document.getElementById("q");
+const send = document.getElementById("send");
+
+function bubble(text, cls) {
+  const d = document.createElement("div");
+  d.className = "msg " + cls;
+  d.textContent = text;
+  chat.appendChild(d);
+  chat.scrollTop = chat.scrollHeight;
+  return d;
+}
+
+function renderSources(container, data) {
+  const wrap = document.createElement("div");
+  wrap.className = "sources";
+  const chips = data.sources.map(s => `<span class="chip">${s.source} · ${s.score}</span>`).join("");
+  const snippets = data.sources.map((s,i) =>
+    `<div class="snippet"><b>[${i+1}] ${s.source}</b><br>${s.text.replace(/</g,"&lt;")}</div>`).join("");
+  wrap.innerHTML = `Sources: ${chips}
+    <details><summary>Show retrieved passages</summary>${snippets}</details>
+    <div class="meta">${data.latency_ms} ms · embeddings: ${data.embed_backend}</div>`;
+  container.appendChild(wrap);
+}
+
+async function ask(question) {
+  if (!question.trim()) return;
+  bubble(question, "user");
+  input.value = "";
+  send.disabled = true;
+  const thinking = bubble("Thinking…", "bot");
+  try {
+    const res = await fetch("/api/chat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ question }),
+    });
+    const data = await res.json();
+    thinking.textContent = data.answer;
+    renderSources(thinking, data);
+  } catch (e) {
+    thinking.textContent = "Error: " + e.message;
+  } finally {
+    send.disabled = false;
+    input.focus();
+  }
+}
+
+form.addEventListener("submit", e => { e.preventDefault(); ask(input.value); });
+</script>
+</body>
+</html>
