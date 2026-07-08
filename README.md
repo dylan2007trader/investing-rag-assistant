@@ -12,7 +12,6 @@ It answers only from these documents and cites them, and refuses questions outsi
 knowledge base (or requests for advice) instead of guessing. The docs are swappable, so the
 same pipeline works for any domain.
 
-Video of the RAG Investing Asistant
 https://www.loom.com/share/26e86e21065449369159bd949ac083e8
 ---
 
