@@ -137,4 +137,3 @@ gcp-rag-assistant/
 └── .env.example
 ```
 
-Built by Dylan Ackerman — github.com/dylan2007trader
