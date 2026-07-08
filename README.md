@@ -1,13 +1,22 @@
-# RAG Conversational Assistant
+# Investing RAG Assistant
 
 A production-shaped **Retrieval-Augmented Generation (RAG)** chatbot that answers
-questions over a knowledge base and **cites its sources**. Built with a Python
+investing questions over a knowledge base and **cites its sources**. Built with a Python
 (FastAPI) backend and a JavaScript chat frontend, with semantic vector search, a
 grounded-generation layer, and an automated retrieval-evaluation harness.
 
-The sample knowledge base models a public-services agency (eligibility, applying,
-appeals, payments, contact) — the kind of enterprise / government use case RAG
-conversational agents are built for — but you can point it at any documents.
+The knowledge base covers investing fundamentals — order types, risk management, options,
+diversification, taxes, valuation metrics (P/E, EPS, beta), a terms glossary, notable
+large-cap stocks, financial research sites, and technical, fundamental, and macro analysis.
+It answers only from these documents and cites them, and refuses questions outside the
+knowledge base (or requests for advice) instead of guessing. The docs are swappable, so the
+same pipeline works for any domain.
+
+> **Educational use only — not financial advice.**
+>
+> _Live demo: [add your deployed URL] · Demo video: [add your Loom link]_
+
+![Investing RAG Assistant — chat UI answering a question with cited sources](docs/screenshot.png)
 
 ---
 
